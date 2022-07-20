@@ -1,0 +1,44 @@
+﻿@page "/"
+@inject IBluetoothService _bluetoothService
+@implements IDisposable
+
+<TitleTip Title="主页"></TitleTip>
+
+<div class="row">
+    <div class="col-12 col-md-6">
+        <BluetoothWeb.Shared.Components.Bluetooth.InforCard />
+    </div>
+    <div class="col-12 col-md-6">
+        <BluetoothWeb.Shared.Components.Bluetooth.LogsCard />
+    </div>
+    @if (DeviceInfor != null)
+    {
+        <div class="col-12 col-md-6">
+            <BluetoothWeb.Shared.Components.Bluetooth.SendDataCard />
+        </div>
+        <div class="col-12 col-md-6">
+            <BluetoothWeb.Shared.Components.Bluetooth.ReceiveDataCard />
+        </div>
+    }
+</div>
+
+@code{
+    public DeviceInforModel DeviceInfor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bluetoothService.OnDeviceChanged += DeviceChanged;
+    }
+
+
+    public void DeviceChanged(DeviceInforModel model)
+    {
+        DeviceInfor = model;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _bluetoothService.OnDeviceChanged -= DeviceChanged;
+    }
+}

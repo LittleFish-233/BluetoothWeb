@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.Server", "BluetoothWeb.Server\BluetoothWeb.Server.csproj", "{4375FBE7-FC5D-4167-8B85-CBA92482AB3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.Shared", "BluetoothWeb.Shared\BluetoothWeb.Shared.csproj", "{135DD23C-44E3-484C-87C2-16831FE8C42C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.DataModel", "BluetoothWeb.DataModel\BluetoothWeb.DataModel.csproj", "{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4375FBE7-FC5D-4167-8B85-CBA92482AB3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4375FBE7-FC5D-4167-8B85-CBA92482AB3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4375FBE7-FC5D-4167-8B85-CBA92482AB3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4375FBE7-FC5D-4167-8B85-CBA92482AB3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{135DD23C-44E3-484C-87C2-16831FE8C42C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{135DD23C-44E3-484C-87C2-16831FE8C42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{135DD23C-44E3-484C-87C2-16831FE8C42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{135DD23C-44E3-484C-87C2-16831FE8C42C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A2D23DDF-C23B-4F0E-BBE1-2F5D37276892}
+	EndGlobalSection
+EndGlobal

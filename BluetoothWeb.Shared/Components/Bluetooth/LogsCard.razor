@@ -1,0 +1,41 @@
+﻿@inject IBluetoothService _bluetoothService
+@implements IDisposable
+@using System.Collections.Specialized
+
+<MCard Class="h-100">
+    <MCardTitle>日志</MCardTitle>
+    <MCardText Style="white-space: break-spaces;max-height:420px;" Class="overflow-auto">
+        @logs
+    </MCardText>
+</MCard>
+
+@code {
+    public string logs { get; set; } = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bluetoothService.Logs.CollectionChanged += Changed;
+        AddLog("开始记录");
+    }
+
+    public void AddLog(string log)
+    {
+        logs += ($"[{DateTime.Now.ToString("G")}]{log}\n");
+        InvokeAsync(StateHasChanged);
+    }
+
+    void Changed(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        foreach (var item in e.NewItems)
+        {
+            AddLog((string)item);
+
+        }
+    }
+
+    public void Dispose()
+    {
+        _bluetoothService.Logs.CollectionChanged -= Changed;
+    }
+}

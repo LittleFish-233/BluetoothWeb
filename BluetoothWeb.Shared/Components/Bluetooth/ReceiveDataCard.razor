@@ -1,0 +1,37 @@
+﻿@inject IBluetoothService _bluetoothService
+@implements IDisposable
+@using System.Collections.Specialized
+
+<MCard Class="h-100">
+    <MCardTitle>数据接收</MCardTitle>
+    <MCardText Style="white-space: break-spaces;max-height:250px;" Class="overflow-auto">
+        @Text
+    </MCardText>
+</MCard>
+
+@code {
+    public string Text { get; set; } = "";
+    public List<byte> Bytes { get; set; } = new List<byte>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bluetoothService.OnDataReceive += DataReceive;
+    }
+
+    public void AddLog(string log)
+    {
+        Text += ($"[{DateTime.Now.ToString("G")}]{log}\n");
+        InvokeAsync(StateHasChanged);
+    }
+
+    void DataReceive(byte[] bytes)
+    {
+        AddLog(System.Text.Encoding.UTF8.GetString(bytes));
+    }
+
+    public void Dispose()
+    {
+        _bluetoothService.OnDataReceive -= DataReceive;
+    }
+}

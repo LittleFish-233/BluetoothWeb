@@ -1,0 +1,8 @@
+
+<PageTitle>@(string.IsNullOrWhiteSpace(Title)? "蓝牙通信项目" : (Title + " - 蓝牙通信项目"))</PageTitle>
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; }
+}

@@ -1,0 +1,150 @@
+﻿@inject IBluetoothService _bluetoothService
+@inject ILocalStorageService _localStorage
+@implements IDisposable
+
+<MCard Class="h-100">
+    <MCardTitle>蓝牙信息</MCardTitle>
+    <MCardText>
+        所有的通信都基于配对的蓝牙设备，请确保正确配对设备
+    </MCardText>
+    @if (availability)
+    {
+        @if (DeviceInfor == null)
+        {
+            <MCardText>
+                <MCheckbox @bind-Value="Filter.AllowAllDevices" Label="查找所有设备"></MCheckbox>
+
+                @if (Filter.AllowAllDevices == false)
+                {
+
+                    <div class="row">
+                        <div class="col-12 col-sm-6 pt-0 pb-0">
+                            <MTextField Label="设备名称" @bind-Value="Filter.DeviceName" TValue="string"></MTextField>
+                        </div>
+                        <div class="col-12 col-sm-6 pt-0 pb-0">
+                            <MTextField Label="设备名称前缀" @bind-Value="Filter.DeviceNamePrefix" TValue="string"></MTextField>
+                        </div>
+                        <div class="col-12 pt-0 pb-0">
+                            <MTextField Label="Service UUID" @bind-Value="Filter.ServiceUuid" TValue="string"></MTextField>
+                        </div>
+                        <div class="col-12 pt-0 pb-0">
+                            <MTextField Label="TX UUID" @bind-Value="Filter.TXuuid" TValue="string"></MTextField>
+                        </div>
+                        <div class="col-12 pt-0 pb-0">
+                            <MTextField Label="RX UUID" @bind-Value="Filter.RXuuid" TValue="string"></MTextField>
+                        </div>
+                    </div>
+                }
+
+            </MCardText>
+
+            <MCardActions>
+                <MSpacer />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="查找设备" Icon="mdi-magnify" IsAsync OnClick="RequestDevice" TextStyle />
+            </MCardActions>
+        }
+        else
+        {
+<MCardText>
+    Id：@DeviceInfor.Id<br />
+    名称：@(string.IsNullOrWhiteSpace(DeviceInfor.Name)?"无": DeviceInfor.Name)
+    @if (DeviceInfor.Connected)
+    {
+        <div class="green--text">已连接</div>
+    }
+    else
+    {
+        <div class="red--text">未连接</div>
+    }
+
+
+</MCardText>
+<MCardActions>
+    <MSpacer />
+    <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="取消配对" Icon="mdi-bluetooth-off " IsAsync OnClick="RemoveDevice" TextStyle />
+</MCardActions>
+
+        }
+
+    }
+    else
+    {
+        <MCardText Class="red--text">
+           当前浏览器不支持蓝牙功能或权限不足
+        </MCardText>
+        <MCardActions>
+            <MSpacer />
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="刷新" Icon="mdi-refresh" IsAsync OnClick="Refresh" TextStyle />
+        </MCardActions>
+
+    }
+
+
+</MCard>
+
+@code {
+    public DeviceFilter Filter { get; set; } = new DeviceFilter();
+    public DeviceInforModel DeviceInfor { get; set; }
+    bool availability;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DeviceInfor = _bluetoothService.GetConnectedDeviceInfor();
+        _bluetoothService.OnDeviceChanged += DeviceChanged;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Load();
+            await Refresh();
+            if(availability)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    public void DeviceChanged(DeviceInforModel model)
+    {
+        DeviceInfor = model;
+        StateHasChanged();
+    }
+
+    public async Task RequestDevice()
+    {
+        await _bluetoothService.RequestDevice(Filter);
+        await Save();
+    }
+
+    public async Task Refresh()
+    {
+        availability =await _bluetoothService.GetAvailability();
+    }
+
+    public async Task Save()
+    {
+        await _localStorage.SetItemAsync("DeviceFilter", Filter);
+    }
+    public async Task Load()
+    {
+        var filter = await _localStorage.GetItemAsync<DeviceFilter>("DeviceFilter");
+        if (filter != null)
+        {
+            Filter = filter;
+        }
+    }
+
+
+    public  Task RemoveDevice()
+    {
+        _bluetoothService.RemoveDevice();
+        return Task.CompletedTask;
+    }
+
+
+    public void Dispose()
+    {
+        _bluetoothService.OnDeviceChanged -= DeviceChanged;
+    }
+}
