@@ -1,0 +1,120 @@
+﻿@inject IBluetoothService _bluetoothService
+@implements IDisposable
+@inject IPopupService _popupService
+
+
+<MCard Class="h-100">
+    <MCardTitle>图表</MCardTitle>
+    <MCardText>
+        <MECharts Option="model" Width="@("100%")" Height="300">
+        </MECharts>
+    </MCardText>
+</MCard>
+@code {
+
+    EChartsOptionModel model = new EChartsOptionModel();
+    bool IsBusy;
+    int MaxLength = 256;
+    List<double> Data = new List<double>();
+
+    private System.Threading.Timer mytimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bluetoothService.OnDataReceive += DataReceive;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+            //启动定时器
+            mytimer = new System.Threading.Timer(new System.Threading.TimerCallback(Send), null, 0, 500);
+
+        }
+    }
+
+    public async void Send(object o)
+    {
+        await InvokeAsync(Refresh);
+
+    }
+
+    public void DataReceive(byte[] bytes)
+    {
+        if (IsBusy)
+        {
+            return;
+        }
+        IsBusy = true;
+
+        short[] data = new short[100];
+        int length = bytes.Length / 2;
+
+        ByteToInt16(bytes, bytes.Length, ref data);
+
+        Data.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095, 3)));
+        if(Data.Count> MaxLength)
+        {
+            Data.RemoveRange(0, length);
+        }
+
+        IsBusy = false;
+    }
+
+    public void Refresh()
+    {
+        if (model.XAxis.Data.Any() == false)
+        {
+
+            model.XAxis.Data.AddRange(Enumerable.Range(0, MaxLength).Select(s => s.ToString()));
+
+        }
+
+        if (model.Legend.Data.Any() == false)
+        {
+            model.Legend.Data.Add("电压");
+        }
+
+        if (model.Series.Any() == false)
+        {
+            model.Series.Add(new EChartsOptionSery
+            {
+                Name = "电压",
+            });
+
+        }
+
+        var series = model.Series.First().Data;
+        series.Clear();
+        series.AddRange(Data);
+
+        StateHasChanged();
+
+    }
+
+    private void ByteToInt16(Byte[] arrByte, int nByteCount, ref Int16[] destInt16Arr)
+    {
+        int i = 0;
+        try
+        {
+            //按两个字节一个整数解析，前一字节当做整数低位，后一字节当做整数高位，调用系统函数转化
+            for (i = 0; i < nByteCount / 2; i++)
+            {
+                Byte[] tmpBytes = new Byte[2] { arrByte[2 * i + 0], arrByte[2 * i + 1] };
+                destInt16Arr[i] = BitConverter.ToInt16(tmpBytes, 0);
+            }
+        }
+        catch (Exception e)
+        {
+            _popupService.ToastErrorAsync("Byte to Int16转化错误！i=" + e.Message + i.ToString());
+        }
+    }
+
+    public void Dispose()
+    {
+        _bluetoothService.OnDataReceive -= DataReceive;
+    }
+}

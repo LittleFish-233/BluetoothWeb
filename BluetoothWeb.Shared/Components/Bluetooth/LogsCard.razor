@@ -21,7 +21,7 @@
 
     public void AddLog(string log)
     {
-        logs += ($"[{DateTime.Now.ToString("G")}]{log}\n");
+        logs = ($"[{DateTime.Now.ToString("G")}]{log}\n")+ logs;
         InvokeAsync(StateHasChanged);
     }
 

@@ -1,4 +1,5 @@
 ﻿using Blazm.Bluetooth;
+
 using BluetoothWeb.DataModel;
 using Masa.Blazor;
 using System.Collections.ObjectModel;
@@ -122,7 +123,7 @@ namespace BluetoothWeb.Shared.Services
         {
             await SendBytes(System.Text.Encoding.UTF8.GetBytes(str));
         }
-
+       
         public Task<bool> GetAvailability()
         {
             return Task.FromResult(true);

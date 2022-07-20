@@ -1,16 +1,30 @@
 ﻿@inject IBluetoothService _bluetoothService
 @implements IDisposable
-@using System.Collections.Specialized
+@inject ILocalStorageService _localStorage
 
 <MCard Class="h-100">
     <MCardTitle>数据接收</MCardTitle>
-    <MCardText Style="white-space: break-spaces;max-height:250px;" Class="overflow-auto">
+    <MCardText Style="white-space: break-spaces;height:200px;" Class="overflow-auto">
         @Text
     </MCardText>
+    <MCardActions>
+        <MSpacer />
+        @if (DisplayReceiveText)
+        {
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="暂停" Icon="mdi-pause" IsAsync OnClick="Close" TextStyle />
+
+        }
+        else
+        {
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="开始" Icon="mdi-play" IsAsync OnClick="Open" TextStyle />
+
+        }
+    </MCardActions>
 </MCard>
 
 @code {
     public string Text { get; set; } = "";
+    public bool DisplayReceiveText { get; set; } = true;
     public List<byte> Bytes { get; set; } = new List<byte>();
 
 
@@ -18,16 +32,52 @@
     {
         _bluetoothService.OnDataReceive += DataReceive;
     }
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Load();
+            StateHasChanged();
+        }
+    }
     public void AddLog(string log)
     {
-        Text += ($"[{DateTime.Now.ToString("G")}]{log}\n");
+        if(DisplayReceiveText==false)
+        {
+            return;
+        }
+        Text = ($"[{DateTime.Now.ToString("G")}]{log.Replace("\0", "")}\n") + Text;
         InvokeAsync(StateHasChanged);
     }
 
     void DataReceive(byte[] bytes)
     {
+        if (bytes.Length > 100)
+        {
+            return;
+        }
         AddLog(System.Text.Encoding.UTF8.GetString(bytes));
+    }
+
+    public async Task Open()
+    {
+        DisplayReceiveText = true;
+        await Save();
+    }
+
+    public async Task Close()
+    {
+        DisplayReceiveText = false;
+        await Save();
+    }
+
+    public async Task Save()
+    {
+        await _localStorage.SetItemAsync("DisplayReceiveText", DisplayReceiveText);
+    }
+    public async Task Load()
+    {
+        DisplayReceiveText = await _localStorage.GetItemAsync<bool>("DisplayReceiveText");
     }
 
     public void Dispose()
