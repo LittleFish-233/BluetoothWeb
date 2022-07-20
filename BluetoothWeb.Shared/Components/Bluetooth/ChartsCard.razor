@@ -14,7 +14,7 @@
 
     EChartsOptionModel model = new EChartsOptionModel();
     bool IsBusy;
-    int MaxLength = 512;
+    int MaxLength = 1024;
     byte[] Data = new byte[10000];
     int index = 0;
 
@@ -32,7 +32,7 @@
         {
 
             //启动定时器
-            mytimer = new System.Threading.Timer(new System.Threading.TimerCallback(Send), null, 0, 500);
+            mytimer = new System.Threading.Timer(new System.Threading.TimerCallback(Send), null, 0, 200);
 
         }
     }
@@ -53,7 +53,7 @@
 
     public void Refresh()
     {
-        short[] data = new short[1000];
+        short[] data = new short[10000];
         int length = MaxLength;
 
         ByteToInt16(Data, MaxLength*2, ref data);
@@ -80,7 +80,7 @@
         var series = model.Series.First().Data;
         series.Clear();
 
-        series.AddRange(data.Take(length).Select(s => s * 3.3 / 4095));
+        series.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095,3)));
 
         StateHasChanged();
 
