@@ -14,8 +14,9 @@
 
     EChartsOptionModel model = new EChartsOptionModel();
     bool IsBusy;
-    int MaxLength = 256;
-    List<double> Data = new List<double>();
+    int MaxLength = 512;
+    byte[] Data = new byte[10000];
+    int index = 0;
 
     private System.Threading.Timer mytimer;
 
@@ -44,33 +45,22 @@
 
     public void DataReceive(byte[] bytes)
     {
-        if (IsBusy)
+        for(int i =0;i<bytes.Length;i++, index=(index+1)%(MaxLength*2))
         {
-            return;
+            Data[index] = bytes[i];
         }
-        IsBusy = true;
-
-        short[] data = new short[100];
-        int length = bytes.Length / 2;
-
-        ByteToInt16(bytes, bytes.Length, ref data);
-
-        Data.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095, 3)));
-        if(Data.Count> MaxLength)
-        {
-            Data.RemoveRange(0, length);
-        }
-
-        IsBusy = false;
     }
 
     public void Refresh()
     {
+        short[] data = new short[1000];
+        int length = MaxLength;
+
+        ByteToInt16(Data, MaxLength*2, ref data);
+
         if (model.XAxis.Data.Any() == false)
         {
-
             model.XAxis.Data.AddRange(Enumerable.Range(0, MaxLength).Select(s => s.ToString()));
-
         }
 
         if (model.Legend.Data.Any() == false)
@@ -89,7 +79,8 @@
 
         var series = model.Series.First().Data;
         series.Clear();
-        series.AddRange(Data);
+
+        series.AddRange(data.Take(length).Select(s => s * 3.3 / 4095));
 
         StateHasChanged();
 
