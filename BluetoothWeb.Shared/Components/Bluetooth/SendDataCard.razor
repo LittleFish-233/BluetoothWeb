@@ -1,16 +1,19 @@
 ﻿@inject IBluetoothService _bluetoothService
 @inject IPopupService _popupService
-@using System.Collections.Specialized
+@inject ILocalDataService _localDataService
 
 <MCard Class="h-100">
     <MCardTitle>发送数据</MCardTitle>
     <MCardText Class="pb-0">
+
         <MTextarea Placeholder="请输入要发送的数据"
                    @bind-Value="Text">
         </MTextarea>
     </MCardText>
 
     <MCardActions Class="pt-0">
+        <MCheckbox Value="_localDataService.Data.AppendToStringEnd" Label="自动添加结束符" ValueChanged="ValueChanged"></MCheckbox>
+
         <MSpacer />
         <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="发送" Icon="mdi-send" IsAsync OnClick="Send" TextStyle />
     </MCardActions>
@@ -25,8 +28,19 @@
         if (string.IsNullOrWhiteSpace(Text))
         {
             await _popupService.ToastErrorAsync("请输入要发送的数据");
+            return;
         }
-        await _bluetoothService.SendString(Text);
+
+
+        await _bluetoothService.SendString($"{Text}{(_localDataService.Data.AppendToStringEnd ? "\0" : "")}");
         await _popupService.ToastSuccessAsync("成功发送数据");
+    }
+
+    public async Task ValueChanged(bool value)
+    {
+        _localDataService.Data.AppendToStringEnd = value;
+        await _localDataService.Save();
+        StateHasChanged();
+
     }
 }

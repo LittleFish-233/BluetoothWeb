@@ -1,6 +1,6 @@
 ﻿@inject IBluetoothService _bluetoothService
 @implements IDisposable
-@inject ILocalStorageService _localStorage
+@inject ILocalDataService _localDataService
 
 <MCard Class="h-100">
     <MCardTitle>数据接收</MCardTitle>
@@ -9,7 +9,7 @@
     </MCardText>
     <MCardActions>
         <MSpacer />
-        @if (DisplayReceiveText)
+        @if (_localDataService.Data.DisplayReceiveText)
         {
             <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="暂停" Icon="mdi-pause" IsAsync OnClick="Close" TextStyle />
 
@@ -24,7 +24,6 @@
 
 @code {
     public string Text { get; set; } = "";
-    public bool DisplayReceiveText { get; set; } = true;
     public List<byte> Bytes { get; set; } = new List<byte>();
 
 
@@ -36,13 +35,12 @@
     {
         if (firstRender)
         {
-            await Load();
             StateHasChanged();
         }
     }
     public void AddLog(string log)
     {
-        if(DisplayReceiveText==false)
+        if (_localDataService.Data.DisplayReceiveText == false)
         {
             return;
         }
@@ -61,24 +59,16 @@
 
     public async Task Open()
     {
-        DisplayReceiveText = true;
-        await Save();
+        _localDataService.Data.DisplayReceiveText = true;
+        await _localDataService.Save();
     }
 
     public async Task Close()
     {
-        DisplayReceiveText = false;
-        await Save();
+        _localDataService.Data.DisplayReceiveText = false;
+        await _localDataService.Save();
     }
 
-    public async Task Save()
-    {
-        await _localStorage.SetItemAsync("DisplayReceiveText", DisplayReceiveText);
-    }
-    public async Task Load()
-    {
-        DisplayReceiveText = await _localStorage.GetItemAsync<bool>("DisplayReceiveText");
-    }
 
     public void Dispose()
     {

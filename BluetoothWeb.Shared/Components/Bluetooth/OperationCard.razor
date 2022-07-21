@@ -1,0 +1,45 @@
+﻿@inject IBluetoothService _bluetoothService
+
+
+<MCard Class="h-100">
+    <MCardTitle>操作</MCardTitle>
+    <MCardText>
+        <div class="row">
+
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-top-left-thick" OnClick="()=>Send(8)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-up-thick" OnClick="()=>Send(1)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-top-right-thick" OnClick="()=>Send(2)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-left-thick" OnClick="()=>Send(7)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-pause" OnClick="()=>Send(9)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-right-thick" OnClick="()=>Send(3)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-bottom-left-thick" OnClick="()=>Send(6)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-down-thick" OnClick="()=>Send(5)" />
+            </div>
+            <div class="col-4" style="text-align: center;">
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-bottom-right-thick" OnClick="()=>Send(4)" />
+            </div>
+        </div>
+    </MCardText>
+</MCard>
+
+@code {
+    public async Task Send(int data)
+    {
+        await _bluetoothService.SendString($"A{data}\0");
+    }
+}

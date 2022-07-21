@@ -1,5 +1,5 @@
 ﻿@inject IBluetoothService _bluetoothService
-@inject ILocalStorageService _localStorage
+@inject ILocalDataService _localDataService
 @implements IDisposable
 
 <MCard Class="h-100">
@@ -12,26 +12,26 @@
         @if (DeviceInfor == null)
         {
             <MCardText>
-                <MCheckbox @bind-Value="Filter.AllowAllDevices" Label="查找所有设备"></MCheckbox>
+                <MCheckbox @bind-Value="_localDataService.Data.Filter.AllowAllDevices" Label="查找所有设备"></MCheckbox>
 
-                @if (Filter.AllowAllDevices == false)
+                @if (_localDataService.Data.Filter.AllowAllDevices == false)
                 {
 
                     <div class="row">
                         <div class="col-12 col-sm-6 pt-0 pb-0">
-                            <MTextField Label="设备名称" @bind-Value="Filter.DeviceName" TValue="string"></MTextField>
+                            <MTextField Label="设备名称" @bind-Value="_localDataService.Data.Filter.DeviceName" TValue="string"></MTextField>
                         </div>
                         <div class="col-12 col-sm-6 pt-0 pb-0">
-                            <MTextField Label="设备名称前缀" @bind-Value="Filter.DeviceNamePrefix" TValue="string"></MTextField>
+                            <MTextField Label="设备名称前缀" @bind-Value="_localDataService.Data.Filter.DeviceNamePrefix" TValue="string"></MTextField>
                         </div>
                         <div class="col-12 pt-0 pb-0">
-                            <MTextField Label="Service UUID" @bind-Value="Filter.ServiceUuid" TValue="string"></MTextField>
+                            <MTextField Label="Service UUID" @bind-Value="_localDataService.Data.Filter.ServiceUuid" TValue="string"></MTextField>
                         </div>
                         <div class="col-12 pt-0 pb-0">
-                            <MTextField Label="TX UUID" @bind-Value="Filter.TXuuid" TValue="string"></MTextField>
+                            <MTextField Label="TX UUID" @bind-Value="_localDataService.Data.Filter.TXuuid" TValue="string"></MTextField>
                         </div>
                         <div class="col-12 pt-0 pb-0">
-                            <MTextField Label="RX UUID" @bind-Value="Filter.RXuuid" TValue="string"></MTextField>
+                            <MTextField Label="RX UUID" @bind-Value="_localDataService.Data.Filter.RXuuid" TValue="string"></MTextField>
                         </div>
                     </div>
                 }
@@ -83,7 +83,6 @@
 </MCard>
 
 @code {
-    public DeviceFilter Filter { get; set; } = new DeviceFilter();
     public DeviceInforModel DeviceInfor { get; set; }
     bool availability;
 
@@ -96,7 +95,6 @@
     {
         if (firstRender)
         {
-            await Load();
             await Refresh();
             if(availability)
             {
@@ -113,28 +111,14 @@
 
     public async Task RequestDevice()
     {
-        await _bluetoothService.RequestDevice(Filter);
-        await Save();
+        await _bluetoothService.RequestDevice(_localDataService.Data.Filter);
+        await _localDataService.Save();
     }
 
     public async Task Refresh()
     {
         availability =await _bluetoothService.GetAvailability();
     }
-
-    public async Task Save()
-    {
-        await _localStorage.SetItemAsync("DeviceFilter", Filter);
-    }
-    public async Task Load()
-    {
-        var filter = await _localStorage.GetItemAsync<DeviceFilter>("DeviceFilter");
-        if (filter != null)
-        {
-            Filter = filter;
-        }
-    }
-
 
     public  Task RemoveDevice()
     {

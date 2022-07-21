@@ -1,6 +1,7 @@
 ﻿@inject IBluetoothService _bluetoothService
 @implements IDisposable
 @inject IPopupService _popupService
+@inject ILocalDataService _localDataService
 
 
 <MCard Class="h-100">
@@ -9,6 +10,19 @@
         <MECharts Option="model" Width="@("100%")" Height="300">
         </MECharts>
     </MCardText>
+    <MCardActions>
+        <MSpacer />
+        @if (_localDataService.Data.DisplayReceiveDataChart)
+        {
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="暂停" Icon="mdi-pause" IsAsync OnClick="Close" TextStyle />
+
+        }
+        else
+        {
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="开始" Icon="mdi-play" IsAsync OnClick="Open" TextStyle />
+
+        }
+    </MCardActions>
 </MCard>
 @code {
 
@@ -16,7 +30,7 @@
     bool IsBusy;
     const int MaxLength = 256;
 
-    byte[] Data = new byte[MaxLength*2];
+    byte[] Data = new byte[MaxLength * 2];
     int index = 0;
 
     private System.Threading.Timer mytimer;
@@ -46,6 +60,10 @@
 
     public void DataReceive(byte[] bytes)
     {
+        if (_localDataService.Data.DisplayReceiveDataChart == false)
+        {
+            return;
+        }
         lock (Data)
         {
             for (int i = 0; i < bytes.Length; i++)
@@ -54,9 +72,6 @@
                 index = (index + 1) % (MaxLength * 2);
             }
         }
-
-
-
     }
 
     public void Refresh()
@@ -65,19 +80,19 @@
         int length = MaxLength;
 
         var tempData = new byte[MaxLength * 2];
-        for(var i=0;i<MaxLength*2;i++)
+        for (var i = 0; i < MaxLength * 2; i++)
         {
             tempData[i] = Data[(index + i) % (MaxLength * 2)];
         }
 
-        ByteToInt16(tempData, MaxLength*2, ref data);
+        ByteToInt16(tempData, MaxLength * 2, ref data);
 
         //检查数据合法性
-        //if(data.Any(s=>s<0))
-        //{
-        //    index = (index + 1) % (MaxLength * 2);
-        //    //return;
-        //}
+        if (data.Any(s => s < 0))
+        {
+            index = (index + 1) % (MaxLength * 2);
+            return;
+        }
 
         if (model.XAxis.Data.Any() == false)
         {
@@ -101,10 +116,21 @@
         var series = model.Series.First().Data;
         series.Clear();
 
-        series.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095,3)));
+        series.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095, 3)));
 
         StateHasChanged();
 
+    }
+    public async Task Open()
+    {
+        _localDataService.Data.DisplayReceiveDataChart = true;
+        await _localDataService.Save();
+    }
+
+    public async Task Close()
+    {
+        _localDataService.Data.DisplayReceiveDataChart = false;
+        await _localDataService.Save();
     }
 
     private void ByteToInt16(Byte[] arrByte, int nByteCount, ref Int16[] destInt16Arr)

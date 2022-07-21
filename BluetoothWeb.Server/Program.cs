@@ -19,7 +19,8 @@ builder.Services.AddMasaBlazor(options=>{
 builder.Services.AddBlazmBluetooth();
 //添加本地储存
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped(typeof( IBluetoothService),typeof( BluetoothService));
+builder.Services.AddScoped(typeof(IBluetoothService), typeof(BluetoothService));
+builder.Services.AddScoped(typeof(ILocalDataService), typeof(LocalDataService));
 
 var app = builder.Build();
 
