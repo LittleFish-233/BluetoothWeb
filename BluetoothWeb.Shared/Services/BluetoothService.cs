@@ -51,7 +51,7 @@ namespace BluetoothWeb.Shared.Services
 
         public void DeviceChanged()
         {
-            OnDeviceChanged.Invoke(GetConnectedDeviceInfor());
+            OnDeviceChanged?.Invoke(GetConnectedDeviceInfor());
         }
 
         public DeviceInforModel GetConnectedDeviceInfor()
@@ -111,6 +111,7 @@ namespace BluetoothWeb.Shared.Services
 
         public void RemoveDevice()
         {
+            Device.Notification-= Device_Notification;
             Device = null;
         }
 
@@ -138,7 +139,7 @@ namespace BluetoothWeb.Shared.Services
         private async void Device_Notification(object sender, CharacteristicEventArgs e)
         {
             var data = e.Value.ToArray();
-            await Task.Run(() => OnDataReceive.Invoke(data));
+            await Task.Run(() => OnDataReceive?.Invoke(data));
         }
     }
 

@@ -7,9 +7,9 @@ namespace BluetoothWeb.DataModel
 
     public class DeviceFilter
     {
-        public string DeviceName { get; set; } = "HC-02";
+        public string DeviceName { get; set; }
 
-        public string DeviceNamePrefix { get; set; }
+        public string DeviceNamePrefix { get; set; } = "HC-02";
 
         public bool AllowAllDevices { get; set; } 
 

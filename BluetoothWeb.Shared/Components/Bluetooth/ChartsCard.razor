@@ -14,8 +14,9 @@
 
     EChartsOptionModel model = new EChartsOptionModel();
     bool IsBusy;
-    int MaxLength = 1024;
-    byte[] Data = new byte[10000];
+    const int MaxLength = 256;
+
+    byte[] Data = new byte[MaxLength*2];
     int index = 0;
 
     private System.Threading.Timer mytimer;
@@ -32,7 +33,7 @@
         {
 
             //启动定时器
-            mytimer = new System.Threading.Timer(new System.Threading.TimerCallback(Send), null, 0, 200);
+            mytimer = new System.Threading.Timer(new System.Threading.TimerCallback(Send), null, 0, 500);
 
         }
     }
@@ -45,18 +46,38 @@
 
     public void DataReceive(byte[] bytes)
     {
-        for(int i =0;i<bytes.Length;i++, index=(index+1)%(MaxLength*2))
+        lock (Data)
         {
-            Data[index] = bytes[i];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                Data[index] = bytes[i];
+                index = (index + 1) % (MaxLength * 2);
+            }
         }
+
+
+
     }
 
     public void Refresh()
     {
-        short[] data = new short[10000];
+        short[] data = new short[MaxLength];
         int length = MaxLength;
 
-        ByteToInt16(Data, MaxLength*2, ref data);
+        var tempData = new byte[MaxLength * 2];
+        for(var i=0;i<MaxLength*2;i++)
+        {
+            tempData[i] = Data[(index + i) % (MaxLength * 2)];
+        }
+
+        ByteToInt16(tempData, MaxLength*2, ref data);
+
+        //检查数据合法性
+        //if(data.Any(s=>s<0))
+        //{
+        //    index = (index + 1) % (MaxLength * 2);
+        //    //return;
+        //}
 
         if (model.XAxis.Data.Any() == false)
         {
