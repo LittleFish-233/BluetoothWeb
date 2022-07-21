@@ -4,7 +4,7 @@ on: workflow_dispatch # 手动触发
  
 jobs:
   build-and-push:
-      if: ${{ github.ref == 'refs/heads/main' && github.repository == 'LittleFish-233/BluetoothWeb' }}  # 检测master分支是否有更新
+      if: ${{ github.ref == 'refs/heads/master' && github.repository == 'LittleFish-233/BluetoothWeb' }}  # 检测master分支是否有更新
       runs-on: ubuntu-latest
       steps:
         - name: Checkout
