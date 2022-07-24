@@ -1,0 +1,52 @@
+﻿@inject IBluetoothService _bluetoothService
+@inject IPopupService _popupService
+@inject ILocalDataService _localDataService
+
+
+<MCard Class="h-100">
+    <MCardTitle>设置速度</MCardTitle>
+    <MCardText>
+        <div class="row">
+            <div class="col-12 col-sm-6 pt-0 pb-0">
+                <MTextField Label="左侧速度" @bind-Value="Left" TValue="string"></MTextField>
+            </div>
+            <div class="col-12 col-sm-6 pt-0 pb-0">
+                <MTextField Label="右侧速度" @bind-Value="Right" TValue="string"></MTextField>
+            </div>
+        </div>
+    </MCardText>
+    <MCardActions>
+        <MSpacer />
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="清零" Icon="mdi-pause" IsAsync OnClick="Stop" TextStyle />
+            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="设置" Icon="mdi-play" IsAsync OnClick="SetValue" TextStyle />
+    </MCardActions>
+</MCard>
+
+@code {
+    public string Left { get; set; }
+    public string Right { get; set; }
+
+    public bool IsSet { get; set; }
+
+    public async Task Stop()
+    {
+        await _bluetoothService.SendString("C\0");
+    }
+
+    public async Task SetValue()
+    {
+        //if(Math.Abs( Left)>900|| Math.Abs(Left)<100|| Math.Abs(Right) > 900 || Math.Abs(Right) < 100)
+        //{
+        //    await  _popupService.ToastErrorAsync("参数范围错误");
+        //}
+
+
+        var left = int.Parse(Left);
+        var right = int.Parse(Right);
+        await _bluetoothService.SendString($"B{Left}{Right}\0");
+
+        await _popupService.ToastInfoAsync("设置成功");
+
+    }
+
+}

@@ -44,10 +44,7 @@ namespace BluetoothWeb.Shared.Services
             _popupService = popupService;
         }
 
-        public ObservableCollection<string> Logs { get; set; } = new ObservableCollection<string>
-        {
-            "Logs:"
-        };
+        public ObservableCollection<string> Logs { get; set; } = new ObservableCollection<string>();
 
         public void DeviceChanged()
         {
@@ -139,7 +136,7 @@ namespace BluetoothWeb.Shared.Services
         private async void Device_Notification(object sender, CharacteristicEventArgs e)
         {
             var data = e.Value.ToArray();
-            await Task.Run(() => OnDataReceive?.Invoke(data));
+            OnDataReceive?.Invoke(data);
         }
     }
 

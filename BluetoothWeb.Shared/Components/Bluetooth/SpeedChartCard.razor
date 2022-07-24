@@ -12,7 +12,7 @@
     </MCardText>
     <MCardActions>
         <MSpacer />
-        @if (_localDataService.Data.DisplayReceiveDataChart)
+        @if (_localDataService.Data.DisplaySpeedChart)
         {
             <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="暂停" Icon="mdi-pause" IsAsync OnClick="Close" TextStyle />
 
@@ -26,12 +26,38 @@
 </MCard>
 @code {
 
-    EChartsOptionModel model = new EChartsOptionModel();
-    bool IsBusy;
-    const int MaxLength = 256;
+    EChartsOptionModel model = new EChartsOptionModel
+    {
+        Title=new EChartsOptionTitle
+        {
+            Text="速度 m/s"
+        },
+        Legend=new EChartsOptionLegend
+        {
+            Data=new List<string>
+            {
+                "左侧速度",
+                "右侧速度"
+            }
+        },
+        Series = new List<EChartsOptionSery>
+        {
+            new EChartsOptionSery{ Name="左侧速度" },
+            new EChartsOptionSery{ Name="右侧速度" }
+        }
+    };
 
-    byte[] Data = new byte[MaxLength * 2];
+    List<double> LeftSpeeds = new List<double>();
+    List<double> RightSpeeds = new List<double>();
+
+    const int MaxDataLength = 300;
+    const int MaxAverageLength = 10;
+    double[] templeft = new double[MaxAverageLength];
+    double[] tempright = new double[MaxAverageLength];
     int index = 0;
+    int DataIndex = 0;
+
+    bool IsBusy;
 
     private System.Threading.Timer mytimer;
 
@@ -54,79 +80,52 @@
 
     public async void Send(object o)
     {
-        await InvokeAsync(Refresh);
+        await InvokeAsync(StateHasChanged);
 
     }
 
     public void DataReceive(byte[] bytes)
     {
-        if (_localDataService.Data.DisplayReceiveDataChart == false)
+        if (_localDataService.Data.DisplaySpeedChart == false)
         {
             return;
         }
-            for (int i = 0; i < bytes.Length; i++)
+
+
+        short[] data = new short[2];
+        ByteToInt16(bytes, 4, ref data);
+
+        templeft[index] = data[0];
+        tempright[index] = data[1];
+        index++;
+        if (index >= MaxAverageLength)
+        {
+            index = 0;
+            DataIndex++;
+
+            model.Series[0].Data.Add(Math.Round(templeft.Average() / 1000.0, 3));
+            model.Series[1].Data.Add(Math.Round(tempright.Average() / 1000.0, 3));
+            model.XAxis.Data.Add(DataIndex.ToString().ToString());
+
+            if (model.Series[0].Data.Count > MaxDataLength)
             {
-                Data[index] = bytes[i];
-                index = (index + 1) % (MaxLength * 2);
+                model.XAxis.Data.RemoveAt(0);
+                model.Series[0].Data.RemoveAt(0);
+                model.Series[1].Data.RemoveAt(0);
             }
+
+        }
     }
 
-    public void Refresh()
-    {
-        short[] data = new short[MaxLength];
-        int length = MaxLength;
-
-        var tempData = new byte[MaxLength * 2];
-        for (var i = 0; i < MaxLength * 2; i++)
-        {
-            tempData[i] = Data[(index + i) % (MaxLength * 2)];
-        }
-
-        ByteToInt16(tempData, MaxLength * 2, ref data);
-
-        //检查数据合法性
-        if (data.Any(s => s < 0))
-        {
-            index = (index + 1) % (MaxLength * 2);
-            return;
-        }
-
-        if (model.XAxis.Data.Any() == false)
-        {
-            model.XAxis.Data.AddRange(Enumerable.Range(0, MaxLength).Select(s => s.ToString()));
-        }
-
-        if (model.Legend.Data.Any() == false)
-        {
-            model.Legend.Data.Add("电压");
-        }
-
-        if (model.Series.Any() == false)
-        {
-            model.Series.Add(new EChartsOptionSery
-            {
-                Name = "电压",
-            });
-
-        }
-
-        var series = model.Series.First().Data;
-        series.Clear();
-
-        series.AddRange(data.Take(length).Select(s => Math.Round(s * 3.3 / 4095, 3)));
-
-        StateHasChanged();
-
-    }
     public async Task Open()
     {
-        _localDataService.Data.DisplayReceiveDataChart = true;
+        _localDataService.Data.DisplaySpeedChart = true;
         await _localDataService.Save();
     }
 
     public async Task Close()
     {
-        _localDataService.Data.DisplayReceiveDataChart = false;
+        _localDataService.Data.DisplaySpeedChart = false;
         await _localDataService.Save();
     }
 

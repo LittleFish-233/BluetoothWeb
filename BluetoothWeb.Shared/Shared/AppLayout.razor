@@ -1,0 +1,25 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+<MAppBar App Dark Dense Color="primary">
+    <MAppBarTitle >
+        <MIcon OnClick="@(()=>NavigationManager.NavigateTo("/"))">mdi-bluetooth</MIcon>
+        蓝牙通信项目
+    </MAppBarTitle>
+    <MSpacer></MSpacer>
+</MAppBar>
+
+<MMain Class="pb-0">
+    <MContainer>
+
+        <CascadingValue Value="this" IsFixed="true">
+                @Body
+        </CascadingValue>
+
+    </MContainer>
+</MMain>
+
+
+@code {
+
+}

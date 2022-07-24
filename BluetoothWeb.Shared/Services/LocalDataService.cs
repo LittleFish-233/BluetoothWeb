@@ -6,6 +6,9 @@ namespace BluetoothWeb.Shared.Services
     public class LocalDataService : ILocalDataService
     {
         public LocalDataModel Data { get; set; } = new LocalDataModel();
+
+        public bool IsApp { get; set; }
+
         private readonly ILocalStorageService _localStorage;
 
         public LocalDataService(ILocalStorageService localStorage)

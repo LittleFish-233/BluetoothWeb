@@ -16,6 +16,10 @@
     protected override async Task OnInitializedAsync()
     {
         _bluetoothService.Logs.CollectionChanged += Changed;
+        foreach(var item in _bluetoothService.Logs)
+        {
+            AddLog(item);
+        }
         AddLog("开始记录");
     }
 

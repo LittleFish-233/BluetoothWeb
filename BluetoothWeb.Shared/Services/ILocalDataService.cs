@@ -11,6 +11,8 @@ namespace BluetoothWeb.Shared.Services
     {
         LocalDataModel Data { get; set; }
 
+        bool IsApp { get; set; }
+
         Task Save();
 
         Task Load();

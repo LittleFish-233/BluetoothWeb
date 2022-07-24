@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.Shared", "Blue
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.DataModel", "BluetoothWeb.DataModel\BluetoothWeb.DataModel.csproj", "{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluetoothWeb.WebAssembly", "BluetoothWeb.WebAssembly\BluetoothWeb.WebAssembly.csproj", "{F9554547-5BF2-4960-A9D5-A0DC8523BDC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A05EE13-8C4E-4690-BCFC-F6214561FB3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9554547-5BF2-4960-A9D5-A0DC8523BDC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9554547-5BF2-4960-A9D5-A0DC8523BDC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9554547-5BF2-4960-A9D5-A0DC8523BDC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9554547-5BF2-4960-A9D5-A0DC8523BDC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

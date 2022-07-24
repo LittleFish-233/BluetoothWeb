@@ -1,0 +1,96 @@
+﻿@page "/"
+@inject IBluetoothService _bluetoothService
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject ILocalDataService _localDataService
+
+<TitleTip Title="主页"></TitleTip>
+
+<div class="row mb-8">
+    <div class="col-12 col-md-6">
+        <BluetoothWeb.Shared.Components.Bluetooth.InforCard />
+    </div>
+    @if (_localDataService.IsApp)
+    {
+
+        <div class="col-12 col-md-6">
+            <MCard>
+                <MCardText>
+                    <div class="row">
+                        <div class="col-6 col-sm-4 col-md-3" style=" text-align: center;">
+                            <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Text="日志" Icon="mdi-note-text"
+                                                                                  OnClick="@(()=>NavigationManager.NavigateTo("/logs"))" />
+                        </div>
+                        @if (DeviceInfor != null)
+                        {
+                            <div class="col-6 col-sm-4 col-md-3" style=" text-align: center;">
+                                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Text="图表" Icon="mdi-chart-line"
+                                                                                      OnClick="@(()=>NavigationManager.NavigateTo("/charts"))" />
+                            </div>
+                            <div class="col-6 col-sm-4 col-md-3" style=" text-align: center;">
+                                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Text="数据" Icon="mdi-database"
+                                                                                      OnClick="@(()=>NavigationManager.NavigateTo("/data"))" />
+                            </div>
+                            <div class="col-6 col-sm-4 col-md-3" style=" text-align: center;">
+                                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Text="操作" Icon="mdi-remote"
+                                                                                      OnClick="@(()=>NavigationManager.NavigateTo("/operation"))" />
+                            </div>
+                            <div class="col-6 col-sm-4 col-md-3" style=" text-align: center;">
+                                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Text="调试" Icon="mdi-bug"
+                                                                                      OnClick="@(()=>NavigationManager.NavigateTo("/debug"))" />
+                            </div>
+                        }
+
+                    </div>
+                </MCardText>
+            </MCard>
+        </div>
+    }
+    else
+    {
+        <div class="col-12 col-md-6">
+            <BluetoothWeb.Shared.Components.Bluetooth.LogsCard />
+        </div>
+        @if (DeviceInfor != null)
+        {
+            <div class="col-12 col-md-6">
+                <BluetoothWeb.Shared.Components.Bluetooth.SendDataCard />
+            </div>
+            <div class="col-12 col-md-6">
+                <BluetoothWeb.Shared.Components.Bluetooth.ReceiveDataCard />
+            </div>
+            <div class="col-12 col-md-6">
+                <BluetoothWeb.Shared.Components.Bluetooth.SpeedChartCard />
+            </div>
+            <div class="col-12 col-md-6">
+                <BluetoothWeb.Shared.Components.Bluetooth.OperationCard />
+            </div>
+            <div class="col-12 col-md-6">
+                <BluetoothWeb.Shared.Components.Bluetooth.SetSpeedCard />
+            </div>
+        }
+    }
+
+</div>
+
+@code{
+    public DeviceInforModel DeviceInfor { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _bluetoothService.OnDeviceChanged += DeviceChanged;
+        DeviceInfor = _bluetoothService.GetConnectedDeviceInfor();
+    }
+
+
+    public void DeviceChanged(DeviceInforModel model)
+    {
+        DeviceInfor = model;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        _bluetoothService.OnDeviceChanged -= DeviceChanged;
+    }
+}

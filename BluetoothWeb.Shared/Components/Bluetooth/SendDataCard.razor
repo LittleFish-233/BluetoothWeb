@@ -9,10 +9,11 @@
         <MTextarea Placeholder="请输入要发送的数据"
                    @bind-Value="Text">
         </MTextarea>
+        <MCheckbox Value="_localDataService.Data.AppendToStringEnd" Label="自动添加结束符" ValueChanged="ValueChanged"></MCheckbox>
+
     </MCardText>
 
     <MCardActions Class="pt-0">
-        <MCheckbox Value="_localDataService.Data.AppendToStringEnd" Label="自动添加结束符" ValueChanged="ValueChanged"></MCheckbox>
 
         <MSpacer />
         <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Text="发送" Icon="mdi-send" IsAsync OnClick="Send" TextStyle />

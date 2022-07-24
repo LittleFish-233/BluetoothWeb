@@ -1,37 +1,49 @@
 ﻿@inject IBluetoothService _bluetoothService
+@inject ILocalDataService _localDataService
 
 
 <MCard Class="h-100">
     <MCardTitle>操作</MCardTitle>
+    @if (_localDataService.IsApp)
+    {
+        <MCardText>
+            蓝牙主端设备发起呼叫，首先是查找，找出周围处于可被查找的蓝牙设备，此时从端设备需要处于可被查找状态，如：蓝牙耳机需要按键操作才能进入可被查找状态，我公司预装GCM－301、101等固件的模块始终处于可被查找状态。<br />
+            主端设备找到从端蓝牙设备后，与从端蓝牙设备进行配对，此时需要输入从端设备的PIN码，一般蓝牙耳机默认为：1234或0000，立体声蓝牙耳机默认为：8888，也有设备不需要输入PIN码。   <br />
+            配对完成后，从端蓝牙设备会记录主端设备的信任信息，此时主端即可向从端设备发起呼叫，根据应用不同，可能是ACL数据链路呼叫或SCO语音链路呼叫，已配对的设备在下次呼叫时，不再需要重新配对。  <br />
+            已配对的设备，做为从端的蓝牙耳机也可以发起建链请求，但做数据通讯的蓝牙模块一般不发起呼叫。    <br />
+            链路建立成功后，主从两端之间即可进行双向的数据或语音通讯。  <br />
+            在通信状态下，主端和从端设备都可以发起断链，断开蓝牙链路
+        </MCardText>
+    }
     <MCardText>
         <div class="row">
 
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-top-left-thick" OnClick="()=>Send(8)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="左上" Icon="mdi-arrow-top-left-thick"  OnClick="()=>Send(8)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-up-thick" OnClick="()=>Send(1)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="加速" Icon="mdi-arrow-up-thick"  OnClick="()=>Send(1)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-top-right-thick" OnClick="()=>Send(2)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="右上" Icon="mdi-arrow-top-right-thick" OnClick="()=>Send(2)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-left-thick" OnClick="()=>Send(7)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="左转" Icon="mdi-arrow-left-thick" OnClick="()=>Send(7)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-pause" OnClick="()=>Send(9)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="停止" Icon="mdi-pause" OnClick="()=>Send(9)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-right-thick" OnClick="()=>Send(3)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="右转" Icon="mdi-arrow-right-thick" OnClick="()=>Send(3)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-bottom-left-thick" OnClick="()=>Send(6)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="左下" Icon="mdi-arrow-bottom-left-thick" OnClick="()=>Send(6)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-down-thick" OnClick="()=>Send(5)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="减速" Icon="mdi-arrow-down-thick"  OnClick="()=>Send(5)" />
             </div>
             <div class="col-4" style="text-align: center;">
-                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton Icon="mdi-arrow-bottom-right-thick" OnClick="()=>Send(4)" />
+                <BluetoothWeb.Shared.Components.CustomMasa.MasaButton TextStyle Class="w-100" Text="右下" Icon="mdi-arrow-bottom-right-thick" OnClick="()=>Send(4)" />
             </div>
         </div>
     </MCardText>

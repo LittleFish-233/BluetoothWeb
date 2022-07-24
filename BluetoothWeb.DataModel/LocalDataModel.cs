@@ -12,6 +12,8 @@ namespace BluetoothWeb.DataModel
 
         public bool DisplayReceiveDataChart { get; set; }
 
+        public bool DisplaySpeedChart { get; set; }
+
         public bool AppendToStringEnd { get; set; } = true;
 
     }
