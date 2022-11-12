@@ -11,8 +11,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 // 添加Masa.Blazor
 builder.Services.AddMasaBlazor(options=>{
-    options.UseTheme(themeOptions=>{
-        themeOptions.Primary = "purple";
+    options.ConfigureTheme(themeOptions=>{
+        themeOptions.Themes.Light.Primary = "purple";
+        themeOptions.Themes.Dark.Primary = "purple";
     });
 });
 //添加蓝牙服务
