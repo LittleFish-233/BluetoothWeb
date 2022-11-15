@@ -8,10 +8,16 @@
     <MCardText>
         <div class="row">
             <div class="col-12 col-sm-6 pt-0 pb-0">
-                <MTextField Label="左侧速度" @bind-Value="Left" TValue="string"></MTextField>
+                <MTextField Label="A电机速度" @bind-Value="SpeedA" TValue="string"></MTextField>
             </div>
             <div class="col-12 col-sm-6 pt-0 pb-0">
-                <MTextField Label="右侧速度" @bind-Value="Right" TValue="string"></MTextField>
+                <MTextField Label="B电机速度" @bind-Value="SpeedB" TValue="string"></MTextField>
+            </div>
+            <div class="col-12 col-sm-6 pt-0 pb-0">
+                <MTextField Label="C电机速度" @bind-Value="SpeedC" TValue="string"></MTextField>
+            </div>
+            <div class="col-12 col-sm-6 pt-0 pb-0">
+                <MTextField Label="D电机速度" @bind-Value="SpeedD" TValue="string"></MTextField>
             </div>
         </div>
     </MCardText>
@@ -23,8 +29,10 @@
 </MCard>
 
 @code {
-    public string Left { get; set; }
-    public string Right { get; set; }
+    public string SpeedA { get; set; }
+    public string SpeedB { get; set; }
+    public string SpeedC { get; set; }
+    public string SpeedD { get; set; }
 
     public bool IsSet { get; set; }
 
@@ -35,15 +43,7 @@
 
     public async Task SetValue()
     {
-        //if(Math.Abs( Left)>900|| Math.Abs(Left)<100|| Math.Abs(Right) > 900 || Math.Abs(Right) < 100)
-        //{
-        //    await  _popupService.ToastErrorAsync("参数范围错误");
-        //}
-
-
-        var left = int.Parse(Left);
-        var right = int.Parse(Right);
-        await _bluetoothService.SendString($"B{Left}{Right}\0");
+        await _bluetoothService.SendString($"B{SpeedA}{SpeedB}{SpeedC}{SpeedD}\0");
 
         await _popupService.ToastInfoAsync("设置成功");
 

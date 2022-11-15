@@ -36,24 +36,33 @@
         {
             Data=new List<string>
             {
-                "左侧速度",
-                "右侧速度"
+                "A电机速度",
+                "B电机速度",
+                "C电机速度",
+                "D电机速度"
             }
         },
         Series = new List<EChartsOptionSery>
         {
-            new EChartsOptionSery{ Name="左侧速度" },
-            new EChartsOptionSery{ Name="右侧速度" }
+            new EChartsOptionSery{ Name="A电机速度" },
+            new EChartsOptionSery{ Name="B电机速度" },
+            new EChartsOptionSery{ Name="C电机速度" },
+            new EChartsOptionSery{ Name="D电机速度" }
         }
     };
 
-    List<double> LeftSpeeds = new List<double>();
-    List<double> RightSpeeds = new List<double>();
+    List<double>[] Speeds = new List<double>[]
+    {
+        new List<double>(),
+        new List<double>(),
+        new List<double>(),
+        new List<double>()
+    };
 
-    const int MaxDataLength = 300;
+    const int MaxDataLength = 100;
+    const int MotorCount = 4;
     const int MaxAverageLength = 10;
-    double[] templeft = new double[MaxAverageLength];
-    double[] tempright = new double[MaxAverageLength];
+    double[][] TempData = new double[MotorCount][];
     int index = 0;
     int DataIndex = 0;
 
@@ -63,6 +72,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        for (int i = 0; i < MotorCount; i++)
+        {
+            TempData[i] = new double[MaxDataLength];
+        }
         _bluetoothService.OnDataReceive += DataReceive;
     }
 
@@ -92,26 +105,34 @@
         }
 
 
-        short[] data = new short[2];
-        ByteToInt16(bytes, 4, ref data);
+        short[] data = new short[4];
+        ByteToInt16(bytes, 8, ref data);
 
-        templeft[index] = data[0];
-        tempright[index] = data[1];
+        for (int i = 0; i < MotorCount; i++)
+        {
+            TempData[i][index] = data[i];
+        }
+
         index++;
         if (index >= MaxAverageLength)
         {
             index = 0;
             DataIndex++;
 
-            model.Series[0].Data.Add(Math.Round(templeft.Average() / 1000.0, 3));
-            model.Series[1].Data.Add(Math.Round(tempright.Average() / 1000.0, 3));
+            for (int i = 0; i < MotorCount; i++)
+            {
+                model.Series[i].Data.Add(Math.Round(TempData[i].Average()/ 1000.0, 3));
+            }
+
             model.XAxis.Data.Add(DataIndex.ToString().ToString());
 
             if (model.Series[0].Data.Count > MaxDataLength)
             {
                 model.XAxis.Data.RemoveAt(0);
-                model.Series[0].Data.RemoveAt(0);
-                model.Series[1].Data.RemoveAt(0);
+                for (int i = 0; i < MotorCount; i++)
+                {
+                    model.Series[i].Data.RemoveAt(0);
+                }
             }
 
         }
